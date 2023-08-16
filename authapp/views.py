@@ -18,4 +18,8 @@ def login(request):
         }
         return render(request, 'logged.html', context)
     except Exception as e:
-        return render(request, 'Login_failed.html')
+        context = {
+            'message' : 'user does not exists',
+        }
+        return render(request, 'login.html', context)
+
