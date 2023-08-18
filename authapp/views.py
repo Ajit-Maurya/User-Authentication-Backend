@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import UserAccount,UserLogInData
 from .models import EmailValidationStatus,UserLoginDataExternal
 # from django.shortcuts import get_object_or_404
@@ -7,12 +7,12 @@ from django.contrib.auth.hashers import make_password, check_password
 # Create your views here.
 def login(request):
     if request.method != 'POST':
-        return render(request,'login.html',{'messege' : 'Only post method are allowed!'})
+        return render(request,'login.html',{'message' : 'Only post method are allowed!'})
     email = request.POST.get('email')
     password = request.POST.get('password')
     
     if email is None or password is None:
-        return render(request,'login.html',{'messege' : 'Please provide email and password'})
+        return render(request,'login.html',{'message' : 'Please provide email and password'})
     hashed_password = make_password(password) 
     try:
         user = UserLogInData.objects.get(email_address=email)
@@ -34,3 +34,11 @@ def login(request):
 
 def home(request):
     return render(request, 'login.html')
+
+def signup(request):
+    if request.method != 'POST':
+        return render(request,'signup.html')
+
+
+def externalProvider(requset):
+    return redirect('')

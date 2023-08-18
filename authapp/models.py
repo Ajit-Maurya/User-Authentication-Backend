@@ -17,7 +17,7 @@ class GrantedPermission(models.Model):
     permissions_id = models.ForeignKey(permission,on_delete=models.CASCADE)
 
 class UserAccount(models.Model):
-    user_id = models.IntegerField()
+    # user_id = models.IntegerField()
     first_name = models.CharField(max_length=30,db_index=True)
     last_name = models.CharField(max_length=30,db_index=True)
     gender = models.CharField(max_length=15,db_index=True)
