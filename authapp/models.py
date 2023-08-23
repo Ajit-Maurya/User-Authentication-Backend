@@ -45,7 +45,7 @@ class EmailValidationStatus(models.Model):
 
 class UserLogInData(models.Model):
     user_id = models.ForeignKey(UserAccount,on_delete=models.CASCADE)
-    login_name  = models.CharField(max_length=30)
+    # login_name  = models.CharField(max_length=30)
     password_hash = models.CharField(max_length=255)
     # password_salt = models.CharField(max_length=100)
     # hash_algorithm_id = models.ForeignKey(HashingAlgo,on_delete=models.PROTECT)

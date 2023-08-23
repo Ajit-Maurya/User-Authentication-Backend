@@ -3,6 +3,7 @@ from .models import UserAccount,UserLogInData
 from .models import EmailValidationStatus,UserLoginDataExternal
 from urllib.parse import urlencode
 # from django.shortcuts import get_object_or_404
+from .forms import UserProfileForm
 from django.contrib.auth.hashers import make_password, check_password
 
 # Create your views here.
@@ -36,17 +37,6 @@ def login(request):
 def home(request):
     return render(request, 'login.html')
 
-def signup(request):
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        gender = request.POST.get('gender')
-        email = request.POST.get('email')
-        dob = request.POST.get('dob')
-        hashed_password = make_password(request.POST.get('password'))
-        
-        return render(request,'signup.html')
-    return render(request,'signup.html')
 
 # def externalProvider(requset):
 #     mock_auth_url = "https://github.com/login/oauth/authorize"
