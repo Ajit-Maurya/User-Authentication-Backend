@@ -12,5 +12,10 @@ def signup(request):
         hashed_password = make_password(request.POST.get('password'))
         user = UserAccount(first_name=first_name, last_name=last_name, gender=gender,dob=dob)
         user.save()
+        userdata = UserLogInData(user_id=user,
+                    password_hash=hashed_password,
+                    email_address = email
+                    )
+        userdata.save()
         return render(request,'signup.html')
     return render(request,'signup.html')
