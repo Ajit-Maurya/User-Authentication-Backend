@@ -1,6 +1,5 @@
 from django.shortcuts import render,redirect
 from .models import UserAccount,UserLogInData
-from .models import EmailValidationStatus,UserLoginDataExternal
 from urllib.parse import urlencode
 # from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
@@ -29,9 +28,6 @@ def login(request):
     except UserAccount.DoesNotExist:
         context = {'message' : 'user does not exists',}
         return render(request, 'login.html', context)
-    except EmailValidationStatus.DoesNotExist:
-        context = {'message' : 'email is not registered'}
-        return render(request, 'login.html',context)
 
 def home(request):
     return render(request, 'login.html')
