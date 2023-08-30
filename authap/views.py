@@ -1,10 +1,11 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from .models import UserAccount,UserLogInData
-from urllib.parse import urlencode
-# from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
+from .misc import generate_unique_string,mail, valid_confirmation_token
+from datetime import datetime
 
 # Create your views here.
+
 def login(request):
     if request.method != 'POST':
         return render(request,'login.html',{'message' : 'Only post method are allowed!'})
@@ -13,20 +14,32 @@ def login(request):
     
     if email is None or password is None:
         return render(request,'login.html',{'message' : 'Please provide email and password'})
+    
     hashed_password = make_password(password) 
     try:
         user = UserLogInData.objects.get(email_address=email)
         if not check_password(hashed_password,user.password_hash):
             raise UserLogInData.DoesNotExist
-
-        email_status = user.email_validation_status
-        if not email_status.email_validation_status:
-            context = {'message':'email is not verified'}
-            return render(request, 'verification.html',context)
+        
+        #handling the case where email was not verified
+        if not user.email_validation_status:
+            if not valid_confirmation_token(user.token_generation_time):
+                context = {'message':'email is not verified,check your email'}
+                return render(request, 'error.html',context)
+            else:
+                user.confirmation_token = generate_unique_string(100)
+                user.token_generation_time = datetime.now().time()
+                user.save()
+                mail(user.confirmation_token)
+                return render(request,'error.html',{'message':'An email was sent to your email for account verification'})
+        
+        #if user exits and verified
         context = {'token' : user.confirmation_token}
-        return render(request,'logged.html',context)
+        return render(request,'home.html',context)
+    
+    #wrong password or invalid user
     except UserAccount.DoesNotExist:
-        context = {'message' : 'user does not exists',}
+        context = {'message' : 'Invalid user or Wrong password',}
         return render(request, 'login.html', context)
 
 def home(request):

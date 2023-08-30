@@ -1,17 +1,8 @@
 from django.shortcuts import render
 from .models import UserAccount,UserLogInData
 from django.contrib.auth.hashers import make_password, check_password
-import secrets,string
 import datetime
-from .misc import mail
-
-def generate_unique_string(length):
-    characters = string.ascii_letters+string.digits
-
-    random_string = ''.join(secrets.choice(characters) for _ in range(length))
-
-    return random_string
-
+from .misc import mail,generate_unique_string
 
 def signup(request):
     if request.method == 'POST':
