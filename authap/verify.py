@@ -11,6 +11,6 @@ def verify(request):
         user.save()
         return render(request,'error.html',{'message' : 'Your email is now verified, Login again'})
     except UserLogInData.DoesNotExist:
-        return render(request,'error.html',{'message':'invalid request'})
+        return render(request,'error.html',{'message':'invalid request, login again'})
     # else:
     #     return render(request,'error.html',{'message': 'Unauthorized'})
