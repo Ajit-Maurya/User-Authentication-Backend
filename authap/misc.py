@@ -28,7 +28,8 @@ def generate_unique_string(length):
     return random_string
 
 def valid_confirmation_token(time):
-    time_difference = time - datetime().now().time()
+    curr_time = datetime.now().time()
+    time_difference = datetime.combine(datetime.min,curr_time) - datetime.combine(datetime.min,time)
     minutes_difference = time_difference.total_seconds()/60
     if minutes_difference > 1:
         return False

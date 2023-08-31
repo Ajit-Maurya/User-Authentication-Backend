@@ -15,15 +15,15 @@ def login(request):
     if email is None or password is None:
         return render(request,'login.html',{'message' : 'Please provide email and password'})
     
-    hashed_password = make_password(password) 
     try:
         user = UserLogInData.objects.get(email_address=email)
-        if not check_password(hashed_password,user.password_hash):
-            raise UserLogInData.DoesNotExist
+        if not check_password(password,user.password_hash):
+            context = {'message': 'Invalid user or Wrong password'}
+            return render(request, 'login.html', context)
         
         #handling the case where email was not verified
         if not user.email_validation_status:
-            if not valid_confirmation_token(user.token_generation_time):
+            if valid_confirmation_token(user.token_generation_time):
                 context = {'message':'email is not verified,check your email'}
                 return render(request, 'error.html',context)
             else:
