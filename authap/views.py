@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import UserAccount,UserLogInData
 from django.contrib.auth.hashers import make_password, check_password
-from .misc import generate_unique_string,mail, valid_confirmation_token
+from .misc import generate_unique_string,mail, valid_confirmation_token,create_url
 from datetime import datetime
 
 # Create your views here.
@@ -34,16 +34,9 @@ def login(request):
                 return render(request,'error.html',{'message':'An email was sent to your email for account verification'})
         
         #if user exits and verified
-        user_info = user.user_id
-        context = {
-            'email' : user.email_address,
-            'token' : user.confirmation_token,
-            'first_name' : user_info.first_name,
-            'last_name' : user_info.last_name,
-            'gender' : user_info.gender,
-            'dob' : user_info.dob
-                }
-        return render(request,'home.html',context)
+        # then redirect the user to home page with token
+        redirect_url = create_url(user.confirmation_token,'http://127.0.0.1:8000/home')
+        return redirect(redirect_url)
     
     #wrong password or invalid user
     except UserLogInData.DoesNotExist or UserAccount.DoesNotExist:

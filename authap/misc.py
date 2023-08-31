@@ -3,15 +3,15 @@ from urllib.parse import urlencode,urlparse,urlunparse
 import secrets,string
 from datetime import datetime
 
-def create_response(token):
-    base_url = "https://127.0.0.1:8000/verify"
+def create_url(token,base_url):
     encode_token = urlencode({'token':token})
     parse_url = urlparse(base_url)
     final_url = urlunparse(parse_url._replace(query=encode_token))
     return final_url
 
 def mail(token):
-    message = create_response(token)
+    base_url = "https://127.0.0.1:8000/verify"
+    message = create_url(token,base_url)
     send_mail(
         'Account Verification',
         message,
