@@ -38,22 +38,22 @@
     </ul>
     <p>or</p>
     <hr>
-    <form method="post" action="{% url 'signup' %}">
+    <form method="post" action="{% url 'edit' %}">
       {% csrf_token %}
       <div class="mb-3">
         <!-- <label for="first_name" class="form-label">First Name</label> -->
-        <input type="name" class="form-control" id="first_name" name="first_name" placeholder="{% user.first_name %}" required>
+        <input type="name" class="form-control" id="first_name" name="first_name" placeholder="{{ first_name }}" required>
       </div>
       <div class="mb-3">
         <!-- <label for="last_name" class="form-label">Last Name</label> -->
-        <input type="name" class="form-control" id="last_name" name="last_name" placeholder="{% user.last_name}" required>
+        <input type="name" class="form-control" id="last_name" name="last_name" placeholder="{{ last_name }}" required>
       </div>
       <div class="mb-3">
         <!-- <label for="dob" class="form-label">Date of Birth</label> -->
-        <input type="date" class="form-control" id="dob" name="dob" placeholder="user.dob" required>
+        <input type="date" class="form-control" id="dob" name="dob" placeholder="{{ dob }}" required>
       </div>
       <div class="mb-3">
-      <select class="form-select" aria-label="{% user.gender %}" name="gender" required>
+      <select class="form-select" aria-label="{{ gender }}" name="gender" required>
         <option selected>Select Gender</option>
         <option value="1">Female</option>
         <option value="2">Male</option>
@@ -61,9 +61,10 @@
       </select>
       </div> 
       <div class="mb-3">
-        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="{% user.email_address}" required>
+        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="{{ email }}" required>
       </div>
-      <button type="submit" class="btn btn-primary">submit</button>
+      <input type="hidden" name="token" value="{{ token }}">
+      <button type="submit" class="btn btn-primary">Edit</button>
     </form>
   </div>
 </div>

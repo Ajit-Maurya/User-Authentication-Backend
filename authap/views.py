@@ -17,7 +17,7 @@ def login(request):
     
     try:
         user = UserLogInData.objects.get(email_address=email)
-        if not check_password(password,user.password_hash):
+        if check_password(password,user.password_hash) == False:
             context = {'message': 'Invalid user or Wrong password'}
             return render(request, 'login.html', context)
         
@@ -34,11 +34,19 @@ def login(request):
                 return render(request,'error.html',{'message':'An email was sent to your email for account verification'})
         
         #if user exits and verified
-        context = {'token' : user.confirmation_token}
+        user_info = user.user_id
+        context = {
+            'email' : user.email_address,
+            'token' : user.confirmation_token,
+            'first_name' : user_info.first_name,
+            'last_name' : user_info.last_name,
+            'gender' : user_info.gender,
+            'dob' : user_info.dob
+                }
         return render(request,'home.html',context)
     
     #wrong password or invalid user
-    except UserAccount.DoesNotExist:
+    except UserLogInData.DoesNotExist or UserAccount.DoesNotExist:
         context = {'message' : 'Invalid user or Wrong password',}
         return render(request, 'login.html', context)
 
