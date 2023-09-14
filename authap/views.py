@@ -3,15 +3,20 @@ from .models import UserAccount,UserLogInData
 from django.contrib.auth.hashers import make_password, check_password
 from .misc import generate_unique_string,mail, valid_confirmation_token
 from datetime import datetime
+import json
 
 # Create your views here.
 
 def login(request):
+    #checks if user is already logged in or not
     token = request.session.get('token')
     if token:
         return secure_login(request)
+    
     if request.method != 'POST':
         return render(request,'login.html',{'message' : 'Only post method are allowed!'})
+    
+    #email and password verification
     email = request.POST.get('email')
     password = request.POST.get('password')
     
@@ -51,6 +56,12 @@ def secure_login(request):
     token = request.session.get('token')
     if not token:
         return render(request,'error.html',{'message' : 'Authentication token not found. Please log in.'})
+    #for already logged in user
+    context_json = request.session.get('context')
+    if context_json:
+        #deserialization of json to dict
+        context = json.loads(context_json)
+        return render(request,'home.html',context)
     
     user  = UserLogInData.objects.get(confirmation_token=token)
     user_info = user.user_id
@@ -58,11 +69,13 @@ def secure_login(request):
         'first_name' : user_info.first_name,
         'last_name' : user_info.last_name,
         'gender' : user_info.gender,
-        'dob' : user_info.dob,
+        'dob' : user_info.dob.strftime('%Y-%m-%d'),
         'email' : user.email_address,
         'token' : user.confirmation_token,
     }
-    
+    # serialization of data - dict to json
+    context_json = json.dumps(context)
+    request.session['context'] = context_json
     return render(request,'home.html',context)
 
 # def externalProvider(requset):
