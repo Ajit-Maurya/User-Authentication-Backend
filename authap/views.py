@@ -1,6 +1,6 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render
 from .models import UserAccount,UserLogInData
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import check_password
 from .misc import generate_unique_string,mail, valid_confirmation_token
 from datetime import datetime
 import json
