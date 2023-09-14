@@ -1,4 +1,5 @@
 from django.shortcuts import render
 
 def edit(request):
-    return 0
+    if request.method != 'POST':
+        return render(request,'error.html',{'message' : 'Only post method are allowed'})

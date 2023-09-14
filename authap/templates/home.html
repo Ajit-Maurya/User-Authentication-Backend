@@ -16,7 +16,7 @@
             <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">{{ user.first_name }}</a>
+            <a class="nav-link disabled" aria-disabled="true">{{ first_name }}</a>
           </li>
         </ul>
       </div>
@@ -29,7 +29,7 @@
 <div class="card" style="width: 20rem;">
   <div class="card-body">
   
-    <form method="post" action="{% url 'edit' %}">
+    <form method="post" action="{% url 'edit' %}" id="editForm">
       {% csrf_token %}
       <div class="mb-3">
         <!-- <label for="first_name" class="form-label">First Name</label> -->
@@ -50,8 +50,28 @@
         <input type="email" class="form-control" id="email" aria-describedby="emailHelp" name="email" placeholder="Email : {{ email }}" disabled>
       </div>
       <input type="hidden" name="token" value="{{ token }}">
-      <button type="submit" class="btn btn-primary">Edit</button>
+      <button type="submit" class="btn btn-primary" hidden id="submitButton">Submit Changes</button>
     </form>
+    <button class="btn btn-primary" id="editButton">Edit</button>
   </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const editButton = document.getElementById('editButton');
+    const submitButton = document.querySelector('#submitButton');
+    const formFields = document.querySelectorAll('#editForm input, #editForm select');
+
+    function toggleFormFieldsDisabled(){
+      for (const field in formFields){
+        field.disabled = !field.disabled;
+      }
+      submitButton.hidden = !submitButton.hidden;
+      editButton.hidden = !editButton.hidden;
+    }
+
+    editButton.addEventListener('click', function(){
+      toggleFormFieldsDisabled();
+    });
+  });
+</script>
 {% endblock %}

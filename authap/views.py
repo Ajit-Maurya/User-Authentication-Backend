@@ -35,8 +35,10 @@ def login(request):
         
         #if user exits and verified
         # then redirect the user to home page with token
-        redirect_url = create_url(user.confirmation_token,'http://127.0.0.1:8000/home')
-        return redirect(redirect_url)
+        # redirect_url = create_url(user.confirmation_token,'http://127.0.0.1:8000/home')
+        request.session['token'] = user.confirmation_token
+        # return redirect('http://127.0.0.1:8000/home')
+        return secure_login(request)
     
     #wrong password or invalid user
     except UserLogInData.DoesNotExist or UserAccount.DoesNotExist:
@@ -46,6 +48,23 @@ def login(request):
 def home(request):
     return render(request, 'login.html')
 
+def secure_login(request):
+    token = request.session.get('token')
+    if not token:
+        return render(request,'error.html',{'message' : 'Authentication token not found. Please log in.'})
+    
+    user  = UserLogInData.objects.get(confirmation_token=token)
+    user_info = user.user_id
+    context = {
+        'first_name' : user_info.first_name,
+        'last_name' : user_info.last_name,
+        'gender' : user_info.gender,
+        'dob' : user_info.dob,
+        'email' : user.email_address,
+        'token' : user.confirmation_token,
+    }
+    
+    return render(request,'home.html',context)
 
 # def externalProvider(requset):
 #     mock_auth_url = "https://github.com/login/oauth/authorize"
