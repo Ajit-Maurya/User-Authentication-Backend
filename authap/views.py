@@ -1,12 +1,15 @@
 from django.shortcuts import render,redirect
 from .models import UserAccount,UserLogInData
 from django.contrib.auth.hashers import make_password, check_password
-from .misc import generate_unique_string,mail, valid_confirmation_token,create_url
+from .misc import generate_unique_string,mail, valid_confirmation_token
 from datetime import datetime
 
 # Create your views here.
 
 def login(request):
+    token = request.session.get('token')
+    if token:
+        return secure_login(request)
     if request.method != 'POST':
         return render(request,'login.html',{'message' : 'Only post method are allowed!'})
     email = request.POST.get('email')
@@ -33,11 +36,7 @@ def login(request):
                 mail(user.confirmation_token)
                 return render(request,'error.html',{'message':'An email was sent to your email for account verification'})
         
-        #if user exits and verified
-        # then redirect the user to home page with token
-        # redirect_url = create_url(user.confirmation_token,'http://127.0.0.1:8000/home')
         request.session['token'] = user.confirmation_token
-        # return redirect('http://127.0.0.1:8000/home')
         return secure_login(request)
     
     #wrong password or invalid user
