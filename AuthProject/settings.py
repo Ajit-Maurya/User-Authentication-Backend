@@ -145,3 +145,5 @@ EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_HOST_USER = 'a3882ed276e6f9'
 EMAIL_HOST_PASSWORD = 'd701bd325981b6'
 EMAIL_PORT = '2525'
+
+AUTHENTICATION_BACKENDS = ['authap.authentication.CustomUserAuthBackend']

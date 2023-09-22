@@ -34,10 +34,10 @@
     <p>Date of Birth : {{ dob }}</p>
     <p>Gender : {{ gender }}</p>
     <p>Email : {{ email }}</p>
-    <a class="btn btn-primary" href="#">Edit</a>
+    <a class="btn btn-primary" href="{% url 'edit' %}">Edit</a>
   </div>
 </div>
-<script>
+<!-- <script>
   document.addEventListener('DOMContentLoaded', function(){
     const editButton = document.getElementById('editButton');
     const submitButton = document.querySelector('#submitButton');
@@ -55,5 +55,5 @@
       toggleFormFieldsDisabled();
     });
   });
-</script>
+</script> -->
 {% endblock %}
