@@ -12,8 +12,11 @@ class CustomUserAuthBackend(ModelBackend):
         if user.check_password(password):
             return user
 
-    def get_user(self, user_id):
+    def get_user(self, user_id=None,email=None):
         try:
-            return CustomUser.objects.get(pk=user_id)
+            if email is not None:
+                return CustomUser.objects.get(email=email)
+            else:
+                return CustomUser.objects.get(pk=user_id)
         except CustomUser.DoesNotExist:
             return None

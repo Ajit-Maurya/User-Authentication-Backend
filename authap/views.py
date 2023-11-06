@@ -1,96 +1,82 @@
 from django.shortcuts import render,redirect
-from .models import UserAccount,UserLogInData
-from django.contrib.auth.hashers import check_password
-from .misc import generate_unique_string,mail, valid_confirmation_token
-from datetime import datetime
-import json
-from django.contrib.auth import login, authenticate
+from .models import UserExtraLoginData,CustomUser
+from django.contrib.auth import login, authenticate,logout
+from django.contrib.auth.decorators import login_required
+from .misc import passwordRecoveryMail,valid_time_diff
 
 # Create your views here.
 
-def login(request):
+def loginUser(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
         user = authenticate(request,email=email,password=password)
+        print(user)
         if user is not None:
-            login(request,user)
-            return redirect('home')
-        else:
-            return render(request,'login.html',{'message':'Invaid username/password!'})
+            user_data = UserExtraLoginData.objects.get(user=user)
+            if(user_data.email_validation_status):
+                request.session['user_pk'] = user.pk
+                login(request,user)
+                return redirect('home')
+            else:
+                return render(request,'error.html',{'message':'Account is not verified, Please check your email!'})
+        return render(request,'login.html',{'message':'Invaid username/password!'})
     return render(request,'login.html')
-    # #checks if user is already logged in or not
-    # token = request.session.get('token')
-    # if token:
-    #     return secure_login(request)
-    
-    # if request.method != 'POST':
-    #     return render(request,'login.html',{'message' : 'Only post method are allowed!'})
-    
-    # #email and password verification
-    # email = request.POST.get('email')
-    # password = request.POST.get('password')
-    
-    # if email is None or password is None:
-    #     return render(request,'login.html',{'message' : 'Please provide email and password'})
-    
-    # try:
-    #     user = UserLogInData.objects.get(email_address=email)
-    #     if check_password(password,user.password_hash) == False:
-    #         context = {'message': 'Invalid user or Wrong password'}
-    #         return render(request, 'login.html', context)
-        
-    #     #handling the case where email was not verified
-    #     if not user.email_validation_status:
-    #         if valid_confirmation_token(user.token_generation_time):
-    #             context = {'message':'email is not verified,check your email'}
-    #             return render(request, 'error.html',context)
-    #         else:
-    #             user.confirmation_token = generate_unique_string(100)
-    #             user.token_generation_time = datetime.now().time()
-    #             user.save()
-    #             mail(user.confirmation_token)
-    #             return render(request,'error.html',{'message':'An email was sent to your email for account verification'})
-        
-    #     request.session['token'] = user.password_hash
-    #     return secure_login(request)
-    
-    # #wrong password or invalid user
-    # except UserLogInData.DoesNotExist or UserAccount.DoesNotExist:
-    #     context = {'message' : 'Invalid user or Wrong password',}
-    #     return render(request, 'login.html', context)
 
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+  
+@login_required
 def home(request):
-    return render(request, 'login.html')
+    return render(request, 'home.html')
 
-def homepage(request):
+@login_required
+def edit(request):
+    return render(request,'edit_page.html')
+
+@login_required
+def saveChanges(request):
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    gender = request.POST.get('gender')
+    dob = request.POST.get('dob')
+    pk = request.session.get('user_pk',None)
+    userProfile = CustomUser.objects.get(pk=pk)
+
+    print(first_name)
+    userProfile.first_name = first_name
+    userProfile.last_name = last_name
+    userProfile.dob = dob
+    userProfile.gender = gender
+
+    userProfile.save()
     return render(request,'home.html')
 
-def secure_login(request):
-    token = request.session.get('token')
-    if not token:
-        return render(request,'error.html',{'message' : 'Authentication token not found. Please log in.'})
-    #for already logged in user
-    context_json = request.session.get('context')
-    if context_json:
-        #deserialization of json to dict
-        context = json.loads(context_json)
-        return render(request,'home.html',context)
-    
-    user  = UserLogInData.objects.get(confirmation_token=token)
-    user_info = user.user_id
-    context = {
-        'first_name' : user_info.first_name,
-        'last_name' : user_info.last_name,
-        'gender' : user_info.gender,
-        'dob' : user_info.dob.strftime('%Y-%m-%d'),
-        'email' : user.email_address,
-        'token' : user.confirmation_token,
-    }
-    # serialization of data - dict to json
-    context_json = json.dumps(context)
-    request.session['context'] = context_json
-    return render(request,'home.html',context)
+def forgotPassword(request):
+    return render(request,'password_recovery.html')
 
-# def externalProvider(requset):
-#     mock_auth_url = "https://github.com/login/oauth/authorize"
+def passwordRecovery(request):
+    email = request.POST.get('email')
+    if email is None:
+        email = request.session['email']
+    password = request.POST.get('password')
+    try:
+        user = CustomUser.objects.get(email=email)
+        request.session['email'] = email
+    except CustomUser.DoesNotExist:
+        user = None
+    if user is not None and password is None:
+        userData = UserExtraLoginData.objects.get(user=user)
+        if userData.password_recovery_token == None or valid_time_diff(userData.recovery_token_time) == False:
+            passwordRecoveryMail(userData)
+            return render(request,'error.html',{'message' : 'An email was sent to your email address for password recovery'})
+        else:
+            return render(request,'password_change.html')
+    elif user is not None and password is not None:
+        user.set_password(password)
+        user.save()
+        request.session['email'] = None
+        return render(request,'error.html',{'message':'your password has been set. Login again!'})
+    else:
+        return render(request,'error.html',{'message':'no such user exist!'})

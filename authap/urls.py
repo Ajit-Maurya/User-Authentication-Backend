@@ -2,13 +2,13 @@ from django.urls import path
 from . import views,signup,verify,edit
 
 urlpatterns = [
-    path('',views.home),
-    path('login',views.login,name='login'),
+    path('',views.home,name='home'),
+    path('login',views.loginUser,name='login'),
     path('signup',signup.signup,name='signup'),
-    path('home',views.homepage,name='home'),
-    # path('externalProvider',views.externalProvider,name='externalProvider')
     path('verify',verify.verify,name='verify'),
-    path('edit',edit.edit,name='edit'),
-    path('confirm',edit.save_changes,name='save_changes')
-    # path('home',home.home_page,name='home_page')
+    path('edit',views.edit,name='edit'),
+    path('confirm',views.saveChanges,name='save_changes'),
+    path('logout',views.logout_view,name='logout'),
+    path('forgot-password',views.forgotPassword,name='forgot_password'),
+    path('password-recovery',views.passwordRecovery,name='password_recovery'),
 ]

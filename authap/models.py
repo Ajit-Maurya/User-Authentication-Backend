@@ -29,7 +29,9 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    is_active = models.BooleanField(default=True)
+    gender = models.CharField(max_length=10)
+    dob = models.DateField()
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     groups = models.ManyToManyField(
@@ -53,6 +55,46 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class UserExtraLoginData(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    email_validation_status = models.BooleanField(default=False)
+    confirmation_token = models.CharField(max_length=101)
+    token_generation_time = models.DateTimeField()
+    password_recovery_token = models.CharField(max_length=101)
+    recovery_token_time = models.DateTimeField()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,15 +132,15 @@ class ExternalProvider(models.Model):
     def __str__(self) -> str:
         return self.provider_name
 
-class UserLogInData(models.Model):
-    user_id = models.ForeignKey(UserAccount,on_delete=models.CASCADE)
-    password_hash = models.CharField(max_length=255)
-    email_address = models.EmailField()
-    confirmation_token = models.CharField(max_length=100)
-    token_generation_time = models.TimeField()
-    email_validation_status = models.BooleanField(default=False)
-    password_recovery_token = models.CharField(max_length=100)
-    recovery_token_time = models.TimeField()
+# class UserLogInData(models.Model):
+#     user_id = models.ForeignKey(UserAccount,on_delete=models.CASCADE)
+#     password_hash = models.CharField(max_length=255)
+#     email_address = models.EmailField()
+#     confirmation_token = models.CharField(max_length=100)
+#     token_generation_time = models.TimeField()
+#     email_validation_status = models.BooleanField(default=False)
+#     password_recovery_token = models.CharField(max_length=100)
+#     recovery_token_time = models.TimeField()
 
     def __str__(self) -> str:
         return self.login_name
