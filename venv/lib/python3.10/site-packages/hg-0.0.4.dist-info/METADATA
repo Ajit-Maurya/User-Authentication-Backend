@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: hg
+Version: 0.0.4
+Summary: Frequent itemsets -- paired counts fp-tree
+Home-page: https://github.com/thorwhalen/uu/tree/master/hg
+Author: Thor Whalen
+License: apache-2.0
+Platform: any
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+
+# hg
+Frequent itemsets -- paired counts fp-tree
+
+
+To install:	```pip install hg```
+
+

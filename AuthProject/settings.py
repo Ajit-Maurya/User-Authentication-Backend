@@ -86,9 +86,7 @@ DATABASES = {
         'ENGINE':'djongo',
         'NAME':'Auth_database',
         "CLIENT" : {
-            'host' : 'mongodb+srv://projectAuth:1Sm19A5Fwgmap2uP@cluster0.slgv5zl.mongodb.net/?retryWrites=true&w=majority',
-            'username':'projectAuth',
-            'password':'1Sm19A5Fwgmap2uP',
+            
         }
     }
 }
